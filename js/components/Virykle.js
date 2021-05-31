@@ -1,9 +1,13 @@
 class Virykle {
-    constructor(selector, elementsCount) {
+    constructor(selector, elementsCount, id) {
         this.selector = selector;
         this.elementsCount = elementsCount;         // kaitlentes pavirsiai / kaitvietes
+        this.id = id;
 
         this.DOM = null;
+        this.rangesDOM = null;
+        this.allElementsDOM = null;     // []
+        this.allSwitchesDOM = null;     // []
         this.price = 1000;
         this.proportion = {
             x: 1,
@@ -16,12 +20,14 @@ class Virykle {
     init() {
         if (!this.isValidSelector() ||
             !this.findElementBySelector() ||
-            !this.isValidElementsCount()) {
+            !this.isValidElementsCount() ||
+            !this.isValidID()) {
             return false;
         }
 
         this.calcProportions();
         this.render();
+        this.addEvents();
     }
 
     isValidSelector() {
@@ -43,6 +49,14 @@ class Virykle {
             !isFinite(this.elementsCount) ||
             this.elementsCount <= 0 ||
             this.elementsCount % 1 !== 0) {
+            return false;
+        }
+        return true;
+    }
+
+    isValidID() {
+        if (typeof this.id !== 'string' ||
+            this.id === '') {
             return false;
         }
         return true;
@@ -80,7 +94,8 @@ class Virykle {
         const rangesBorderWidth = 1;
         const width = fullElementWidth * this.proportion.x + rangesBorderWidth * 2;
 
-        const HTML = `<div class="virykle" style="width: ${width}px;">
+        // sukonstruojamas HTML
+        const HTML = `<div id="${this.id}" class="virykle" style="width: ${width}px;">
                         <div class="kaitlentes">
                             ${this.generateElements()}
                         </div>
@@ -89,7 +104,25 @@ class Virykle {
                         </div>
                     </div>`;
 
+        // istatome i NARSYKLE
         this.DOM.insertAdjacentHTML('beforeend', HTML);
+
+        // susirandame tai ka katik sukureme
+        this.rangesDOM = this.DOM.querySelector('#' + this.id);
+        this.allElementsDOM = this.rangesDOM.querySelectorAll('.kaitlente');
+        this.allSwitchesDOM = this.rangesDOM.querySelectorAll('.jungiklis');
+    }
+
+    addEvents() {
+        for (let i = 0; i < this.allSwitchesDOM.length; i++) {
+            const elementDOM = this.allElementsDOM[i];
+            const switchDOM = this.allSwitchesDOM[i];
+
+            switchDOM.addEventListener('click', () => {
+                switchDOM.classList.toggle('ijungtas');
+                elementDOM.classList.toggle('ijungtas');
+            })
+        }
     }
 }
 
@@ -102,6 +135,7 @@ export { Virykle }
 
 
 /*
+
 SKYLES  ISDESTYMAS
 1       1x1
 2       2x1
@@ -119,7 +153,12 @@ SKYLES  ISDESTYMAS
 14      4x4
 15      4x4
 16      4x4
+
+
 Pirmasis skaicius:
+
 x = Math.ceil(Math.sqrt(n))
 y = Math.ceil(n / x)
+
+
 */
