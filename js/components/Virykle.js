@@ -5,6 +5,10 @@ class Virykle {
 
         this.DOM = null;
         this.price = 1000;
+        this.proportion = {
+            x: 1,
+            y: 1
+        }
 
         this.init();
     }
@@ -13,10 +17,10 @@ class Virykle {
         if (!this.isValidSelector() ||
             !this.findElementBySelector() ||
             !this.isValidElementsCount()) {
-            console.log('fail');
             return false;
         }
 
+        this.calcProportions();
         this.render();
     }
 
@@ -44,19 +48,44 @@ class Virykle {
         return true;
     }
 
+    calcProportions() {
+        this.proportion.x = Math.ceil(Math.sqrt(this.elementsCount));
+        this.proportion.y = Math.ceil(this.elementsCount / this.proportion.x);
+    }
+
+    generateElements() {
+        let HTML = '';
+
+        for (let i = 0; i < this.elementsCount; i++) {
+            HTML += '<div class="kaitlente"></div>';
+        }
+
+        return HTML;
+    }
+
+    generateSwitches() {
+        let HTML = '';
+
+        for (let i = 0; i < this.elementsCount; i++) {
+            HTML += '<div class="jungiklis"></div>';
+        }
+
+        return HTML;
+    }
+
     render() {
-        let HTML = `<div class="virykle">
+        const elementWidth = 120;
+        const elementMargin = 10;
+        const fullElementWidth = elementWidth + elementMargin * 2;
+        const rangesBorderWidth = 1;
+        const width = fullElementWidth * this.proportion.x + rangesBorderWidth * 2;
+
+        const HTML = `<div class="virykle" style="width: ${width}px;">
                         <div class="kaitlentes">
-                            <div class="kaitlente"></div>
-                            <div class="kaitlente"></div>
-                            <div class="kaitlente"></div>
-                            <div class="kaitlente"></div>
+                            ${this.generateElements()}
                         </div>
                         <div class="jungikliai">
-                            <div class="jungiklis"></div>
-                            <div class="jungiklis"></div>
-                            <div class="jungiklis"></div>
-                            <div class="jungiklis"></div>
+                            ${this.generateSwitches()}
                         </div>
                     </div>`;
 
@@ -65,3 +94,32 @@ class Virykle {
 }
 
 export { Virykle }
+
+
+
+
+
+
+
+/*
+SKYLES  ISDESTYMAS
+1       1x1
+2       2x1
+3       2x2
+4       2x2
+5       3x2
+6       3x2
+7       3x3
+8       3x3
+9       3x3
+10      4x3
+11      4x3
+12      4x3
+13      4x4
+14      4x4
+15      4x4
+16      4x4
+Pirmasis skaicius:
+x = Math.ceil(Math.sqrt(n))
+y = Math.ceil(n / x)
+*/
